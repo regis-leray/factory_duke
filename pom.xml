@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.regis-leray</groupId>
 	<artifactId>factory-duke</artifactId>
-	<version>0.1-SNAPHOT</version>
+	<version>0.2-SNAPSHOT</version>
 
 	<name>Factory Duke</name>
 
