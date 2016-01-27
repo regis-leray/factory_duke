@@ -1,9 +1,9 @@
 package custom;
 
-import factoryduke.IFactory;
+import factoryduke.TFactory;
 
 
-public class EmptyFactory implements IFactory {
+public class EmptyFactory implements TFactory {
 	@Override
 	public void define() {
 

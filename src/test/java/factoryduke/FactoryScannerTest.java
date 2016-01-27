@@ -18,8 +18,7 @@ public class FactoryScannerTest {
 	@Before
 	public void createScanner() {
 		scanner = new FactoryScanner().withPackages("factories")
-				.withInterfaces(IFactory.class)
-				.withAnnotations(Factory.class);
+				.withInterfaces(TFactory.class);
 	}
 
 	@Test
@@ -41,20 +40,10 @@ public class FactoryScannerTest {
 	}
 
 	@Test
-	public void nothing_with_wrong_annotation() throws Exception {
-		List<String> founded = new FactoryScanner().withInterfaces(new Class[0]).withAnnotations(NoFactory.class).scan();
-		assertThat(founded).hasSize(0);
-	}
-
-	@Test
 	public void nothing_with_wrong_interface() throws Exception {
-		List<String> founded = new FactoryScanner().withInterfaces(NoIFactory.class).withAnnotations(new Class[0]).scan();
+		List<String> founded = new FactoryScanner().withInterfaces(NoIFactory.class).scan();
 		assertThat(founded).hasSize(0);
 	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE) //can use in class only.
-	public @interface NoFactory {}
 
 	public interface NoIFactory {}
 }

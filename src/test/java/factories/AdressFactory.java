@@ -1,10 +1,10 @@
 package factories;
 
-import factoryduke.IFactory;
+import factoryduke.TFactory;
 import factoryduke.FactoryDuke;
 import model.Address;
 
-public class AdressFactory implements IFactory {
+public class AdressFactory implements TFactory {
 	@Override
 	public void define() {
 		FactoryDuke.define(Address.class, "address_in_fr", a -> {

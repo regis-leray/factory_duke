@@ -1,6 +1,7 @@
 package factoryduke;
 
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -12,9 +13,9 @@ public class FactoryRuntime {
 
 	private static final FactoryRuntime instance = new FactoryRuntime();
 
-	private final Map<String, Object> map = new HashMap<>();
+	private final Map<String, Object> templates = new HashMap<>();
 
-	private FactoryContext config;
+	private final FactoryContext config;
 
 	private FactoryRuntime(){
 		config = new FactoryContextLoader().load();
@@ -27,15 +28,15 @@ public class FactoryRuntime {
 	<T> void register(Class<T> clazz, String identifier, Object builder) {
 		Assert.that().isTrue(builder instanceof Supplier || builder instanceof Consumer, "Please provide a Consumer or Supplier instance");
 
-		if (map.containsKey(identifier)) {
+		if (templates.containsKey(identifier)) {
 			throw new IllegalStateException(String.format("Cannot define duplicate template with the same identifier %s for the class %s", identifier, clazz.getCanonicalName()));
 		}
 
-		map.put(identifier, builder);
+		templates.put(identifier, builder);
 	}
 
 	<T> T build(Class<T> clazz, String identifier, Consumer<T> override) {
-		final Object builder = map.computeIfAbsent(identifier, o -> {
+		final Object builder = templates.computeIfAbsent(identifier, o -> {
 			throw new IllegalStateException("No builder register with identifier : " + identifier + " with bloc initialization");
 		});
 
@@ -57,10 +58,15 @@ public class FactoryRuntime {
 	}
 
 	public void load() {
+		reset();
 		new FactoriesLoader(config.getPackages()).load();
 	}
 
 	public void reset() {
-		map.clear();
+		templates.clear();
+	}
+
+	Map getTemplates(){
+		return Collections.unmodifiableMap(this.templates);
 	}
 }

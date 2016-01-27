@@ -15,8 +15,6 @@ public class FactoryScanner {
 
 	private Class[] interfaces = new Class[0];
 
-	private Class[] annotations = new Class[0];
-
 	public FactoryScanner withPackages(String... packages) {
 		this.packages = packages;
 		return this;
@@ -32,31 +30,16 @@ public class FactoryScanner {
 		return this;
 	}
 
-	public FactoryScanner withAnnotations(Class... annotations) {
-		this.annotations = annotations;
-		return this;
-	}
-
 	public Optional<String> scanOne() {
 		return scan().stream().findFirst();
 	}
 
 	public List<String> scan() {
 		final FastClasspathScanner scanner = new FastClasspathScanner(packages).scan();
-		final List<String> founded = new ArrayList<>();
-
-		founded.addAll(scanWith(interfaces, clazz -> scanner.getNamesOfClassesImplementing(clazz)));
-		founded.addAll(scanWith(annotations, clazz -> scanner.getNamesOfClassesWithAnnotation(clazz)));
-
-		return founded;
-	}
-
-	private List<String> scanWith(Class[] classes, Function<Class, List<String>> func) {
 		List<String> matches = new ArrayList<>();
-		for (Class clazz : classes) {
-			matches.addAll(func.apply(clazz));
+		for (Class clazz : interfaces) {
+			matches.addAll(scanner.getNamesOfClassesImplementing(clazz));
 		}
 		return matches;
 	}
-
 }

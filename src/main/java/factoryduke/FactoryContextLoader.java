@@ -7,11 +7,11 @@ public class FactoryContextLoader {
 	private final FactoryScanner scanner;
 
 	public FactoryContextLoader() {
-		this(new FactoryScanner().withInterfaces(FactoryAware.class));
+		this(new FactoryScanner());
 	}
 
 	public FactoryContextLoader(FactoryScanner scanner) {
-		this.scanner = scanner;
+		this.scanner = scanner.withInterfaces(FactoryAware.class);
 	}
 
 	public FactoryContext load() {

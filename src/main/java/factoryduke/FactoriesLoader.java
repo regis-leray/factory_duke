@@ -1,8 +1,5 @@
 package factoryduke;
 
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import factoryduke.exceptions.FactoryLoaderException;
 import factoryduke.exceptions.FactoryNotFoundException;
-import factoryduke.utils.ReflectionUtils;
 
 public class FactoriesLoader {
 
@@ -29,8 +25,7 @@ public class FactoriesLoader {
 	public FactoriesLoader(String... packages) {
 		this(new FactoryScanner()
 				.withPackages(DEFAULT_PACKAGE)
-				.withInterfaces(IFactory.class)
-				.withAnnotations(Factory.class)
+				.withInterfaces(TFactory.class)
 				.addPackages(packages));
 	}
 
@@ -41,7 +36,9 @@ public class FactoriesLoader {
 	public void load() {
 		doLoadSafe(DEFAULT_FACTORY);
 
-		for (String factoryClass : scanner.scan()) {
+		final List<String> founded = scanner.scan();
+
+		for (String factoryClass : founded) {
 			doLoad(factoryClass);
 		}
 	}
@@ -56,29 +53,11 @@ public class FactoriesLoader {
 
 	private void doLoad(String className) {
 		try {
-			final Object factory = Class.forName(className).newInstance();
-			if (factory instanceof IFactory) {
-				((IFactory) factory).define();
-			} else {
-				callDefine(factory);
-			}
+			((TFactory) Class.forName(className).newInstance()).define();
 		} catch (ClassNotFoundException e) {
 			throw new FactoryNotFoundException(e);
-		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			throw new FactoryLoaderException(e);
 		}
-	}
-
-	private void callDefine(Object factory) throws InvocationTargetException, IllegalAccessException {
-		final List<Method> methods = ReflectionUtils.getMethodsAnnotatedWith(factory.getClass(), Factory.Define.class);
-
-		if (methods.size() == 0) {
-			throw new IllegalStateException(String.format("The factory %s is missing the %s annotation ", factory.getClass().getCanonicalName(), Factory.Define.class.getCanonicalName()));
-		}
-		if (methods.size() > 1) {
-			throw new IllegalStateException(String.format("The factory %s have multiple %s annotation. Please provide only one method.", factory.getClass().getCanonicalName(), Factory.Define.class.getCanonicalName()));
-		}
-
-		methods.get(0).invoke(factory);
 	}
 }

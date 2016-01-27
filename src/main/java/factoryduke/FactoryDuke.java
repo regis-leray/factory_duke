@@ -8,10 +8,6 @@ public class FactoryDuke {
 	private FactoryDuke() {
 	}
 
-	static {
-		FactoryRuntime.getRuntime().load();
-	}
-
 	public static <T> void define(Class<T> clazz, Supplier<T> builder) {
 		define(clazz, clazz.getCanonicalName(), builder);
 	}
@@ -42,6 +38,10 @@ public class FactoryDuke {
 
 	public static <T> T build(Class<T> clazz, String identifier, Consumer<T> override) {
 		return FactoryRuntime.getRuntime().build(clazz, identifier, override);
+	}
+
+	public static void load() {
+		FactoryRuntime.getRuntime().load();
 	}
 
 	public static void reset() {

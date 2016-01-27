@@ -1,10 +1,20 @@
-import factoryduke.TFactory;
+package configuration;
+
+import factoryduke.FactoryAware;
+import factoryduke.FactoryContext;
 import factoryduke.FactoryDuke;
+import factoryduke.TFactory;
 import model.Address;
 import model.Role;
 import model.User;
 
-public class Factories implements TFactory {
+public class Factories implements FactoryAware, TFactory {
+
+	@Override
+	public FactoryContext preInit() {
+		return new FactoryContext().withPackages("custom");
+	}
+
 	@Override
 	public void define() {
 		FactoryDuke.define(User.class, u -> {
