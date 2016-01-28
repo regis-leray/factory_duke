@@ -5,19 +5,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
-import factoryduke.utils.Assert;
+import factoryduke.exceptions.TemplateDuplicateException;
+import factoryduke.exceptions.TemplateNotFoundException;
 
 public class FactoryRuntime {
 
 	private static final FactoryRuntime instance = new FactoryRuntime();
 
-	private final Map<String, Object> templates = new HashMap<>();
+	private final Map<String, Template> templates = new HashMap<>();
 
 	private final FactoryContext config;
 
-	private FactoryRuntime(){
+	private FactoryRuntime() {
 		config = new FactoryContextLoader().load();
 	}
 
@@ -25,36 +25,21 @@ public class FactoryRuntime {
 		return instance;
 	}
 
-	<T> void register(Class<T> clazz, String identifier, Object builder) {
-		Assert.that().isTrue(builder instanceof Supplier || builder instanceof Consumer, "Please provide a Consumer or Supplier instance");
+	void register(Template template) {
 
-		if (templates.containsKey(identifier)) {
-			throw new IllegalStateException(String.format("Cannot define duplicate template with the same identifier %s for the class %s", identifier, clazz.getCanonicalName()));
+		if (templates.containsKey(template.getIdentifier())) {
+			throw new TemplateDuplicateException(String.format("Cannot define duplicate template with the same identifier %s for the class %s", template.getIdentifier(), template.getClazz()));
 		}
-
-		templates.put(identifier, builder);
+		templates.put(template.getIdentifier(), template);
 	}
 
-	<T> T build(Class<T> clazz, String identifier, Consumer<T> override) {
-		final Object builder = templates.computeIfAbsent(identifier, o -> {
-			throw new IllegalStateException("No builder register with identifier : " + identifier + " with bloc initialization");
-		});
+	<T> T build(String identifier, Consumer<T> override) {
+		T instance = templates.computeIfAbsent(identifier, o -> {
+			throw new TemplateNotFoundException("No builder register with identifier : " + identifier + " with bloc initialization");
+		}).create();
 
-		try {
-			T instance = null;
-
-			if (builder instanceof Consumer) {
-				instance = clazz.newInstance();
-				((Consumer<T>) builder).accept(instance);
-			} else {
-				instance = ((Supplier<T>) builder).get();
-			}
-
-			override.accept(instance);
-			return instance;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		override.accept(instance);
+		return instance;
 	}
 
 	public void load() {
@@ -66,7 +51,7 @@ public class FactoryRuntime {
 		templates.clear();
 	}
 
-	Map getTemplates(){
+	Map getTemplates() {
 		return Collections.unmodifiableMap(this.templates);
 	}
 }

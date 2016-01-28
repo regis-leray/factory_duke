@@ -3,10 +3,11 @@ package factoryduke;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.function.Consumer;
-
 import org.junit.Test;
 
+import factoryduke.exceptions.TemplateDuplicateException;
+import factoryduke.exceptions.TemplateInstanciationException;
+import factoryduke.exceptions.TemplateNotFoundException;
 import model.User;
 
 public class FactoryRuntimeTest {
@@ -26,10 +27,11 @@ public class FactoryRuntimeTest {
 
 	@Test
 	public void duplicate_definition(){
-		FactoryRuntime.getRuntime().register(User.class, User.class.getCanonicalName(), (Consumer<User>) u -> u.setName("test"));
+		Template tp = new ConsumerTemplate(User.class, User.class.getCanonicalName(), u -> u.setName("test"));
+		FactoryRuntime.getRuntime().register(tp);
 
-		assertThatThrownBy(() -> FactoryRuntime.getRuntime().register(User.class, User.class.getCanonicalName(), (Consumer<User>) u -> u.setName("test")))
-				.isInstanceOf(IllegalStateException.class)
+		assertThatThrownBy(() -> FactoryRuntime.getRuntime().register(tp))
+				.isInstanceOf(TemplateDuplicateException.class)
 				.hasMessageContaining("Cannot define duplicate template with the same identifier")
 				.hasNoCause();
 	}
@@ -42,20 +44,20 @@ public class FactoryRuntimeTest {
 	@Test
 	public void no_template_found(){
 		assertThatThrownBy(() ->
-				FactoryRuntime.getRuntime().build(User.class, "not_found", u -> {})
-		).isInstanceOf(IllegalStateException.class)
+				FactoryRuntime.getRuntime().<User>build("not_found", u -> {})
+		).isInstanceOf(TemplateNotFoundException.class)
 				.hasMessageContaining("No builder register with identifier : not_found")
 				.hasNoCause();
 	}
 
 	@Test
 	public void no_constructor_with_template(){
-		FactoryRuntime.getRuntime().register(NoConstructor.class, "no_default_constructor", (Consumer<NoConstructor>) c -> {});
+		Template tp = new ConsumerTemplate(NoConstructor.class, "no_default_constructor", c -> {});
+		FactoryRuntime.getRuntime().register(tp);
 
 		assertThatThrownBy(() ->
-				FactoryRuntime.getRuntime().build(NoConstructor.class, "no_default_constructor", c -> {})
-		).isInstanceOf(RuntimeException.class)
-				.hasRootCauseInstanceOf(NoSuchMethodException.class);
+				FactoryRuntime.getRuntime().build("no_default_constructor", c -> {})
+		).isInstanceOf(TemplateInstanciationException.class);
 	}
 
 
