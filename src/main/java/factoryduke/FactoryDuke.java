@@ -1,6 +1,5 @@
 package factoryduke;
 
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -38,6 +37,22 @@ public class FactoryDuke {
 
 	public static <T> T build(Class<T> clazz, String identifier, Consumer<T> override) {
 		return FactoryRuntime.getRuntime().build(identifier, override);
+	}
+
+	public static <T> Repeat<T> repeat(Class<T> clazz){
+		return repeat(clazz, clazz.getCanonicalName());
+	}
+
+	public static <T> Repeat<T> repeat(Class<T> clazz, String identifier) {
+		return repeat(clazz, identifier, o -> {});
+	}
+
+	public static <T> Repeat<T> repeat(Class<T> clazz, Consumer<T> override) {
+		return repeat(clazz, clazz.getCanonicalName(), override);
+	}
+
+	public static <T> Repeat<T> repeat(Class<T> clazz, String identifier, Consumer<T> override) {
+		return FactoryRuntime.getRuntime().repeat(identifier, override);
 	}
 
 	public static void load() {

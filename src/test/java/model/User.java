@@ -4,9 +4,18 @@ package model;
  * Created by regis.leray on 1/23/16.
  */
 public class User {
+	private long id;
 	private String name;
 	private String lastName;
 	private Role role;
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
 
 	private Address addr;
 

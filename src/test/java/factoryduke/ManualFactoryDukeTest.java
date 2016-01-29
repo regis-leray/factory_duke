@@ -1,10 +1,15 @@
 package factoryduke;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import factoryduke.generators.Generators;
+import factoryduke.generators.SequenceValuesGenerator;
 import model.Address;
 import model.Role;
 import model.User;
@@ -89,5 +94,38 @@ public class ManualFactoryDukeTest {
 		assertThat(user).isNotNull()
 				.hasFieldOrPropertyWithValue("role", Role.ADMIN)
 				.hasFieldOrPropertyWithValue("addr.city", "Paris");
+	}
+
+	@Test
+	public void repeat_with_generators(){
+		FactoryDuke.reset();
+
+		SequenceValuesGenerator<Long> ids = Generators.values(1L, 2L, 3L);
+		SequenceValuesGenerator<String> names = Generators.values("Scott", "John", "Malcom");
+
+		FactoryDuke.define(User.class, u -> {
+			u.setId(ids.nextValue());
+			u.setName(names.nextValue());
+		});
+
+		List<User> users = FactoryDuke.repeat(User.class).times(3).toList();
+
+		assertThat(users).hasSize(3).extracting(User::getId, User::getName)
+				.containsExactly(tuple(1L, "Scott"), tuple(2L, "John"), tuple(3L, "Malcom"));
+	}
+
+	@Test
+	public void repeat_no_generators(){
+		FactoryDuke.reset();
+
+		FactoryDuke.define(User.class, u -> {
+			u.setId(1L);
+			u.setName("James");
+		});
+
+		List<User> users = FactoryDuke.repeat(User.class).times(3).toList();
+
+		assertThat(users).hasSize(3).extracting(User::getId, User::getName)
+				.containsExactly(tuple(1L, "James"), tuple(1L, "James"), tuple(1L, "James"));
 	}
 }

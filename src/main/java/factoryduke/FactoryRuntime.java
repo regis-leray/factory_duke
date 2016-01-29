@@ -34,13 +34,23 @@ public class FactoryRuntime {
 	}
 
 	<T> T build(String identifier, Consumer<T> override) {
-		T instance = templates.computeIfAbsent(identifier, o -> {
-			throw new TemplateNotFoundException("No builder register with identifier : " + identifier + " with bloc initialization");
-		}).create();
+		T instance = findTemplate(identifier).create();
 
 		override.accept(instance);
 		return instance;
 	}
+
+	<T> Repeat<T> repeat(String identifier, Consumer<T> override){
+		final Template template = findTemplate(identifier);
+		return new Repeat<>(template, override);
+	}
+
+	private Template findTemplate(String identifier) {
+		return templates.computeIfAbsent(identifier, o -> {
+			throw new TemplateNotFoundException("No builder register with identifier : " + identifier + " with bloc initialization");
+		});
+	}
+
 
 	public void load() {
 		reset();
