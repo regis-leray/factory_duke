@@ -4,12 +4,31 @@ FactoryDuke is a java framework that lets you create objects as test data. All y
 
 Have you ever heard of factory_girl a super cool Ruby framework? Well, FactoryDuke is pretty similar in its use.
 
+Factory Duke is using a lot of lamdba, so it is only compatible with ```java 8``` and higher.
+
+###Concept 
+
+* Simple 
+* Extensible
+* Fast (no reflection)
+* Very light (Only one dependency)
+
+###Installing
+
+Use it like a maven dependency on your project
+
+<dependency>
+    <groupId>com.github.regis-leray</groupId>
+    <artifactId>factory-duke</artifactId>
+    <version>0.3</version>
+</dependency>
+
 ##How do we use this?
 
 FactoryDuke is a singleton object where you can register all of the templates. For example, you can define a template as follows:
 
 ````java
-FactoryDuke.define(model.User.class, u -> {
+FactoryDuke.define(User.class, u -> {
 			u.setLastName("Scott");
 			u.setName("Malcom");
 			u.setRole(model.Role.USER);
@@ -19,13 +38,13 @@ FactoryDuke.define(model.User.class, u -> {
 after you can use this definition
 
 ```java
-model.User user = FactoryDuke.build(model.User.class);
+model.User user = FactoryDuke.build(User.class);
 ```
 
 If you need a full control of the bean creation you return the instance itself.
 
 ````java
-FactoryDuke.define(model.User.class, () -> {
+FactoryDuke.define(User.class, () -> {
 			User u = new User();
 			u.setLastName("Scott");
 			u.setName("Malcom");
@@ -34,28 +53,26 @@ FactoryDuke.define(model.User.class, () -> {
 		});
 ````
 
-or
+You can extend factory by using the supplier approach
 
 ````java
-FactoryDuke.define(model.User.class, "admin_user", () -> {
+FactoryDuke.define(User.class, "admin_user", () -> {
 			User u = FactoryDuke.build(model.User.class);
 			u.setRole(model.Role.ADMIN);
 			return u;
 		});
 ````
 
+```java
+User user = FactoryDuke.build(User.class, "admin_user");
+```
+
 
 ##One Factory == One Java File
 
-By default FactoryDuke will load all available factories definitions through the classloader.
-
-```
-classpath:Factories
-classpath:factories/**
-```
-
 It is highly recommended that you have one factory for each class that provides the simplest set of attributes necessary to create an instance of that class.
 
+###How to create a template factory
 
 ```java
 public class UserFactory implements IFactory {
@@ -71,33 +88,39 @@ public class UserFactory implements IFactory {
 }
 ```
 
-or with Annotations
+All factories definitions can be loaded using FactoryDuke telling what package that contains the templates.
+It will look by default under ```classpath:Factories, classpath:factories/**```
 
-```java
-@Factory
-public class UserFactory {
+```
+FactoryDuke.load();
+```
 
-	@Factory.Define
-	public void define(){
-		FactoryDuke.define(model.User.class, u -> {
-    			u.setLastName("Scott");
-    			u.setName("Malcom");
-    			u.setRole(model.Role.USER);
-    		});
-	}
+You can specify you own package
+
+```
+FactoryDuke.load("x.x.custom.package");
+```
+
+Example of loading templates with JUnit tests
+
+```
+@BeforeClass
+public static void setUp() {
+    FactoryDuke.load());
 }
 ```
 
+The template are save in a static map, if you want to clear all the template you need to call
+
+```
+FactoryDuke.reset());
+```
+
+
+
 ##Todo(s)
 
-* Add Block FactoryDuke.define(User.class, "").andThen(User::setAddr, () -> { return User; })
-FactoryDuke.define(User.class, "").andThen(User::setAddr,)
-* Add custom packages for factories
-* Call multiple time factory (repeat)
-* Create sequence generator
-* Define hook to link a DI context (Spring / Guice)
 * Define Hook to specify Persistence context (JPA : Hibernate / EclipseLink)
-
 
 ##Licence
 
