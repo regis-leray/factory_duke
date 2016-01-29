@@ -116,6 +116,33 @@ The template are save in a static map, if you want to clear all the template you
 FactoryDuke.reset());
 ```
 
+##Build list of object
+
+
+Create a list / set of two exact same user
+```
+List<User> list = FactoryDuke.repeat(User.class).times(2).toList();
+Set<User> sets = FactoryDuke.repeat(User.class).times(2).toSet()
+```
+
+If you need to use generator 
+ 
+```
+SequenceValuesGenerator<Long> ids = Generators.sequence();
+SequenceValuesGenerator<String> names = Generators.values("Scott", "John", "Malcom");
+
+FactoryDuke.define(User.class, u -> {
+	u.setId(ids.nextValue());
+	u.setName(names.nextValue());
+});
+
+List<User> users = FactoryDuke.repeat(User.class).times(2).toList();
+ 
+``` 
+
+
+
+
 
 
 ##Todo(s)
