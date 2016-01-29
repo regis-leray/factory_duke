@@ -17,11 +17,13 @@ Factory Duke is using a lot of lamdba, so it is only compatible with ```java 8``
 
 Use it like a maven dependency on your project
 
+```
 <dependency>
     <groupId>com.github.regis-leray</groupId>
     <artifactId>factory-duke</artifactId>
     <version>0.3</version>
 </dependency>
+```
 
 ##How do we use this?
 
