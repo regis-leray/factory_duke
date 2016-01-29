@@ -56,7 +56,11 @@ public class FactoryDuke {
 	}
 
 	public static void load() {
-		FactoryRuntime.getRuntime().load();
+		load(new String[0]);
+	}
+
+	public static void load(String... packages) {
+		FactoryRuntime.getRuntime().load(packages);
 	}
 
 	public static void reset() {

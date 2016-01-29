@@ -15,12 +15,6 @@ public class FactoryRuntime {
 
 	private final Map<String, Template> templates = new HashMap<>();
 
-	private final FactoryContext config;
-
-	private FactoryRuntime() {
-		config = new FactoryContextLoader().load();
-	}
-
 	public static FactoryRuntime getRuntime() {
 		return instance;
 	}
@@ -51,10 +45,9 @@ public class FactoryRuntime {
 		});
 	}
 
-
-	public void load() {
+	public void load(String...packages) {
 		reset();
-		new FactoriesLoader(config.getPackages()).load();
+		new FactoriesLoader(packages).load();
 	}
 
 	public void reset() {
