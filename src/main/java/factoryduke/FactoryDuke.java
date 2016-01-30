@@ -36,7 +36,7 @@ public class FactoryDuke {
 	}
 
 	public static <T> T build(Class<T> clazz, String identifier, Consumer<T> override) {
-		return FactoryRuntime.getRuntime().build(identifier, override);
+		return FactoryRuntime.getRuntime().build(identifier, override).toOne();
 	}
 
 	public static <T> Repeat<T> repeat(Class<T> clazz){
@@ -52,7 +52,7 @@ public class FactoryDuke {
 	}
 
 	public static <T> Repeat<T> repeat(Class<T> clazz, String identifier, Consumer<T> override) {
-		return FactoryRuntime.getRuntime().repeat(identifier, override);
+		return FactoryRuntime.getRuntime().build(identifier, override);
 	}
 
 	public static void load() {

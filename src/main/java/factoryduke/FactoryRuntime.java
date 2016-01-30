@@ -27,14 +27,7 @@ public class FactoryRuntime {
 		templates.put(template.getIdentifier(), template);
 	}
 
-	<T> T build(String identifier, Consumer<T> override) {
-		T instance = findTemplate(identifier).create();
-
-		override.accept(instance);
-		return instance;
-	}
-
-	<T> Repeat<T> repeat(String identifier, Consumer<T> override){
+	<T> Repeat<T> build(String identifier, Consumer<T> override){
 		final Template template = findTemplate(identifier);
 		return new Repeat<>(template, override);
 	}

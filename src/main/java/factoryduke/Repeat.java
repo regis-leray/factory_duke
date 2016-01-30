@@ -20,6 +20,10 @@ public class Repeat<T> {
 		this.override = override;
 	}
 
+	public T toOne(){
+		return times(1).toList().get(0);
+	}
+
 	public Repeat<T> times(int times) {
 		this.times = times;
 		return this;
@@ -39,11 +43,15 @@ public class Repeat<T> {
 		List<T> list = new ArrayList<>(times);
 
 		for (int i = 0; i < times; i++) {
-			final T intance = template.create();
-			override.accept(intance);
-			list.add(intance);
+			list.add(createInstance());
 		}
 		return list;
+	}
+
+	private T createInstance() {
+		final T intance = template.create();
+		override.accept(intance);
+		return intance;
 	}
 
 }

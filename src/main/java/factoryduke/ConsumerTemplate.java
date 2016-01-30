@@ -18,9 +18,8 @@ public class ConsumerTemplate extends Template {
 			T instance = (T) getClazz().newInstance();
 			consumer.accept(instance);
 			return instance;
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (ClassCastException | InstantiationException | IllegalAccessException e) {
 			throw new TemplateInstanciationException(e);
 		}
-
 	}
 }
