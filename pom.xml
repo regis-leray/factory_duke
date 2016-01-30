@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.regis-leray</groupId>
 	<artifactId>factory-duke</artifactId>
-	<version>0.4</version>
+	<version>0.5-SNAPSHOT</version>
 
 	<name>Factory Duke</name>
 
@@ -215,7 +215,7 @@
 		<connection>scm:git:git@github.com:regis-leray/factory_duke.git</connection>
 		<developerConnection>scm:git:git@github.com:regis-leray/factory_duke.git</developerConnection>
 		<url>https://github.com/regis-leray/factory_duke</url>
-		<tag>factory-duke-0.4</tag>
+		<tag>factory-duke-0.1</tag>
 	</scm>
 	<url>https://github.com/regis-leray/factory_duke</url>
 </project>
