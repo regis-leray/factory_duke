@@ -1,10 +1,8 @@
 package factoryduke;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;

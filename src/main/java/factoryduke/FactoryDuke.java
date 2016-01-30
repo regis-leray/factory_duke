@@ -12,7 +12,7 @@ public class FactoryDuke {
 	}
 
 	public static <T> void define(Class<T> clazz, String identifier,  Supplier<T> builder) {
-		FactoryRuntime.getRuntime().register(new SupplyTemplate<>(clazz, identifier, builder));
+		FactoryRuntimeHolder.getRuntime().register(new SupplyTemplate<>(clazz, identifier, builder));
 	}
 
 	public static <T> void define(Class<T> clazz, Consumer<T> builder) {
@@ -20,7 +20,7 @@ public class FactoryDuke {
 	}
 
 	public static <T> void define(Class<T> clazz, String identifier, Consumer<T> builder) {
-		FactoryRuntime.getRuntime().register(new ConsumerTemplate(clazz, identifier, builder));
+		FactoryRuntimeHolder.getRuntime().register(new ConsumerTemplate(clazz, identifier, builder));
 	}
 
 	public static <T> T build(Class<T> clazz) {
@@ -36,7 +36,7 @@ public class FactoryDuke {
 	}
 
 	public static <T> T build(Class<T> clazz, String identifier, Consumer<T> override) {
-		return FactoryRuntime.getRuntime().build(identifier, override).toOne();
+		return FactoryRuntimeHolder.getRuntime().build(identifier, override).toOne();
 	}
 
 	public static <T> Repeat<T> repeat(Class<T> clazz){
@@ -52,7 +52,7 @@ public class FactoryDuke {
 	}
 
 	public static <T> Repeat<T> repeat(Class<T> clazz, String identifier, Consumer<T> override) {
-		return FactoryRuntime.getRuntime().build(identifier, override);
+		return FactoryRuntimeHolder.getRuntime().build(identifier, override);
 	}
 
 	public static void load() {
@@ -60,10 +60,10 @@ public class FactoryDuke {
 	}
 
 	public static void load(String... packages) {
-		FactoryRuntime.getRuntime().load(packages);
+		FactoryRuntimeHolder.getRuntime().load(packages);
 	}
 
 	public static void reset() {
-		FactoryRuntime.getRuntime().reset();
+		FactoryRuntimeHolder.getRuntime().reset();
 	}
 }

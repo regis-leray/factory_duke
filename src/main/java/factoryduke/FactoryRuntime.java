@@ -2,22 +2,16 @@ package factoryduke;
 
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import factoryduke.exceptions.TemplateDuplicateException;
 import factoryduke.exceptions.TemplateNotFoundException;
 
-public class FactoryRuntime {
+class FactoryRuntime {
 
-	private static final FactoryRuntime instance = new FactoryRuntime();
-
-	private final Map<String, Template> templates = new HashMap<>();
-
-	public static FactoryRuntime getRuntime() {
-		return instance;
-	}
+	private Map<String, Template> templates = new ConcurrentHashMap<>();
 
 	void register(Template template) {
 
@@ -27,7 +21,7 @@ public class FactoryRuntime {
 		templates.put(template.getIdentifier(), template);
 	}
 
-	<T> Repeat<T> build(String identifier, Consumer<T> override){
+	<T> Repeat<T> build(String identifier, Consumer<T> override) {
 		final Template template = findTemplate(identifier);
 		return new Repeat<>(template, override);
 	}
@@ -38,12 +32,12 @@ public class FactoryRuntime {
 		});
 	}
 
-	public void load(String...packages) {
+	void load(String... packages) {
 		reset();
 		new FactoriesLoader(packages).load();
 	}
 
-	public void reset() {
+	void reset() {
 		templates.clear();
 	}
 

@@ -16,26 +16,26 @@ public class FactoryRuntimeTest {
 
 	@Before
 	public void removeTemplate() {
-		FactoryRuntime.getRuntime().reset();
+		FactoryRuntimeHolder.getRuntime().reset();
 	}
 
 	@Test
 	public void found_factories() {
-		FactoryRuntime.getRuntime().load();
-		assertThat(FactoryRuntime.getRuntime().getTemplates()).hasSize(7);
+		FactoryRuntimeHolder.getRuntime().load();
+		assertThat(FactoryRuntimeHolder.getRuntime().getTemplates()).hasSize(7);
 	}
 
 	@Test
 	public void reset() {
-		assertThat(FactoryRuntime.getRuntime().getTemplates()).isEmpty();
+		assertThat(FactoryRuntimeHolder.getRuntime().getTemplates()).isEmpty();
 	}
 
 	@Test
 	public void duplicate_definition() {
 		Template tp = new ConsumerTemplate(User.class, User.class.getCanonicalName(), u -> u.setName("test"));
-		FactoryRuntime.getRuntime().register(tp);
+		FactoryRuntimeHolder.getRuntime().register(tp);
 
-		assertThatThrownBy(() -> FactoryRuntime.getRuntime().register(tp))
+		assertThatThrownBy(() -> FactoryRuntimeHolder.getRuntime().register(tp))
 				.isInstanceOf(TemplateDuplicateException.class)
 				.hasMessageContaining("Cannot define duplicate template with the same identifier")
 				.hasNoCause();
@@ -43,20 +43,20 @@ public class FactoryRuntimeTest {
 
 	@Test
 	public void build_instance_with_supplier_wrong_cast() {
-		FactoryRuntime.getRuntime().load();
+		FactoryRuntimeHolder.getRuntime().load();
 
 		assertThatThrownBy(() -> {
-			FactoryRuntime.getRuntime().<Address>build("admin_user", o -> {
+			FactoryRuntimeHolder.getRuntime().<Address>build("admin_user", o -> {
 			}).toOne();
 		}).isInstanceOf(ClassCastException.class);
 	}
 
 	@Test
 	public void build_instance_with_consumer_wrong_cast() {
-		FactoryRuntime.getRuntime().load();
+		FactoryRuntimeHolder.getRuntime().load();
 
 		assertThatThrownBy(() -> {
-			FactoryRuntime.getRuntime().<Address>build("user_with_fr_address", o -> {
+			FactoryRuntimeHolder.getRuntime().<Address>build("user_with_fr_address", o -> {
 			}).toOne();
 		}).isInstanceOf(ClassCastException.class);
 	}
@@ -64,7 +64,7 @@ public class FactoryRuntimeTest {
 	@Test
 	public void no_template_found() {
 		assertThatThrownBy(() ->
-				FactoryRuntime.getRuntime().<User>build("not_found", u -> {
+				FactoryRuntimeHolder.getRuntime().<User>build("not_found", u -> {
 				})
 		).isInstanceOf(TemplateNotFoundException.class)
 				.hasMessageContaining("No builder register with identifier : not_found")
@@ -75,10 +75,10 @@ public class FactoryRuntimeTest {
 	public void no_constructor_with_template() {
 		Template tp = new ConsumerTemplate(NoConstructor.class, "no_default_constructor", c -> {
 		});
-		FactoryRuntime.getRuntime().register(tp);
+		FactoryRuntimeHolder.getRuntime().register(tp);
 
 		assertThatThrownBy(() ->
-				FactoryRuntime.getRuntime().build("no_default_constructor", c -> {
+				FactoryRuntimeHolder.getRuntime().build("no_default_constructor", c -> {
 				}).toOne()
 		).isInstanceOf(TemplateInstanciationException.class);
 	}
