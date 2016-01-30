@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/regis-leray/factory_duke.png?branch=master)](https://travis-ci.org/regis-leray/factory_duke)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.regis-leray/factory-duke.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.regis-leray/factory-duke)
+[![Coverage Status](https://coveralls.io/repos/github/regis-leray/factory_duke/badge.svg?branch=master)](https://coveralls.io/github/regis-leray/factory_duke?branch=master)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://vtence.mit-license.org)
 
 
