@@ -1,4 +1,10 @@
-#FactoryDuke [![Build Status](https://travis-ci.org/regis-leray/factory_duke.png?branch=master)](https://travis-ci.org/regis-leray/factory_duke)
+#FactoryDuke 
+
+[![Build Status](https://travis-ci.org/regis-leray/factory_duke.png?branch=master)](https://travis-ci.org/regis-leray/factory_duke)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.regis-leray/factory-duke.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.regis-leray/factory-duke)
+[![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://vtence.mit-license.org)
+
+
 
 FactoryDuke is a java framework that lets you create objects as test data. All you have to do is define the templates for each of the classes that you want FactoryDuke to create objects from. After that, FactoryDuke takes care of the rest.
 
@@ -143,14 +149,10 @@ List<User> users = FactoryDuke.repeat(User.class).times(2).toList();
 ``` 
 
 
-
-
-
-
 ##Todo(s)
 
 * Define Hook to specify Persistence context (JPA : Hibernate / EclipseLink)
 
 ##Licence
 
-FactoryPal is distributed under the [Apache 2 licence](http://www.apache.org/licenses/LICENSE-2.0.html)
+FactoryDuke is distributed under the [MIT licence](https://opensource.org/licenses/MIT)
