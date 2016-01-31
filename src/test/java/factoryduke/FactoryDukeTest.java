@@ -49,6 +49,14 @@ public class FactoryDukeTest {
 	}
 
 	@Test
+	public void repeat_2_users_as_set(){
+		assertThat(FactoryDuke.repeat(User.class).times(2).toSet())
+				.hasSize(2)
+				.extracting(User::getName, User::getLastName)
+				.containsExactly(Tuple.tuple("Malcom", "Scott"), Tuple.tuple("Malcom", "Scott"));
+	}
+
+	@Test
 	public void repeat_2_users_with_identifier(){
 		assertThat(FactoryDuke.repeat(User.class, "user_with_fr_address").times(2).toList())
 				.hasSize(2)

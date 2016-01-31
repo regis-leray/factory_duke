@@ -119,7 +119,7 @@ Example of loading templates with JUnit tests
 
 ```
 @Before
-public static void setUp() {
+public void setUp() {
     FactoryDuke.load());
 }
 ```

@@ -28,10 +28,6 @@ public class FactoryScanner {
 		return this;
 	}
 
-	public Optional<String> scanOne() {
-		return scan().stream().findFirst();
-	}
-
 	public List<String> scan() {
 		final FastClasspathScanner scanner = new FastClasspathScanner(packages).scan();
 		List<String> matches = new ArrayList<>();
