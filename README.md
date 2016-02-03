@@ -120,14 +120,14 @@ Example of loading templates with JUnit tests
 ```
 @Before
 public void setUp() {
-    FactoryDuke.load());
+    FactoryDuke.load();
 }
 ```
 
 The templates are save in a static map, if you want to clear all the templates you need to call
 
 ```
-FactoryDuke.reset());
+FactoryDuke.reset();
 ```
 
 ##Build list of object
@@ -160,7 +160,6 @@ FactoryDuke.define(User.class, "generator_users", u -> {
 List<User> users = FactoryDuke.repeat(User.class, "generator_users").times(3).toList();
  
 ``` 
-
 
 ##Todo(s)
 
