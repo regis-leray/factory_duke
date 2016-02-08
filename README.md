@@ -161,9 +161,14 @@ List<User> users = FactoryDuke.repeat(User.class, "generator_users").times(3).to
  
 ``` 
 
-##Todo(s)
+##Global callback
 
-* Define Hook to specify Persistence context (JPA : Hibernate / EclipseLink)
+If you need to setup a share behavior(s) you can now register global callback(s)
+
+```
+FactoryDuke.load().registerGlobalCallback(System.out::println)
+```
+
 
 ##Licence
 

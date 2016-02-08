@@ -6,7 +6,7 @@ package factoryduke;
 public class FactoryRuntimeHolder {
 	private static final ThreadLocal<FactoryRuntime> context = new ThreadLocal<>();
 
-	public static FactoryRuntime getRuntime(){
+	static FactoryRuntime getRuntime(){
 		if(context.get() == null){
 			context.set(new FactoryRuntime());
 		}

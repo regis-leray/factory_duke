@@ -2,29 +2,34 @@ package factoryduke;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-public class Repeat<T> {
-
-	private int times;
-
-	private Consumer<T> override;
+public class Repeat<T> implements InstanceBuilder<T>, InstanceBuilder.CollectionBuilder<T> {
 
 	private final Template template;
 
-	Repeat(Template template, Consumer<T> override) {
+	private final Consumer<T> override;
+
+	private final List<Consumer> callbacks;
+
+	private int times;
+
+	Repeat(Template template, Consumer<T> override, List<Consumer> callbacks) {
 		this.template = template;
 		this.override = override;
+		this.callbacks = callbacks;
 	}
 
-	public T toOne(){
+	public T toOne() {
 		return times(1).toList().get(0);
 	}
 
-	public Repeat<T> times(int times) {
+	public CollectionBuilder<T> times(int times) {
 		this.times = times;
 		return this;
 	}
@@ -41,8 +46,9 @@ public class Repeat<T> {
 
 	private List<T> callTemplate() {
 		List<T> list = new ArrayList<>(times);
+		AtomicInteger counter = new AtomicInteger(times);
 
-		for (int i = 0; i < times; i++) {
+		while (counter.getAndDecrement() > 0) {
 			list.add(createInstance());
 		}
 		return list;
@@ -51,6 +57,7 @@ public class Repeat<T> {
 	private T createInstance() {
 		final T intance = template.create();
 		override.accept(intance);
+		callbacks.stream().forEach(c -> c.accept(intance));
 		return intance;
 	}
 

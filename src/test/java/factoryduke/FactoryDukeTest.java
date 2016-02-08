@@ -1,7 +1,12 @@
 package factoryduke;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 import org.assertj.core.groups.Tuple;
 import org.junit.Before;
@@ -13,59 +18,81 @@ import model.User;
 
 public class FactoryDukeTest {
 
+	private Mock mock = mock(Mock.class);
+
 	@Before
-	public void initialize(){
-		FactoryDuke.load();
+	public void initialize() {
+		FactoryDuke.load().registerGlobalCallback(o -> mock.callMe());
+		reset(mock);
 	}
 
 	@Test
-	public void build_consumer_definition(){
+	public void build_consumer_definition() {
 		assertThat(FactoryDuke.build(User.class)).extracting(User::getName, User::getLastName)
 				.contains("Malcom", "Scott");
+
+		verify(mock, times(1)).callMe();
+		verifyNoMoreInteractions(mock);
 	}
 
 	@Test
-	public void adress_default(){
+	public void adress_default() {
 		assertThat(FactoryDuke.build(Address.class)).extracting(Address::getCity, Address::getStreet).contains("Montreal", "prince street");
+		verify(mock, times(1)).callMe();
+		verifyNoMoreInteractions(mock);
 	}
 
 	@Test
-	public void factory_call_other_factory(){
+	public void factory_call_other_factory() {
 		assertThat(FactoryDuke.build(User.class, "user_with_fr_address")).extracting("name", "addr.city").contains("Malcom", "Paris");
+		verify(mock, times(3)).callMe();
+		verifyNoMoreInteractions(mock);
 	}
 
 	@Test
-	public void repeat_1_user(){
+	public void repeat_1_user() {
 		assertThat(FactoryDuke.repeat(User.class).toOne()).extracting(User::getName, User::getLastName)
 				.contains("Malcom", "Scott");
+
+		verify(mock, times(1)).callMe();
+		verifyNoMoreInteractions(mock);
 	}
 
 	@Test
-	public void repeat_2_users(){
-			assertThat(FactoryDuke.repeat(User.class).times(2).toList())
-					.hasSize(2)
-					.extracting(User::getName, User::getLastName)
-					.containsExactly(Tuple.tuple("Malcom", "Scott"), Tuple.tuple("Malcom", "Scott"));
+	public void repeat_2_users() {
+		assertThat(FactoryDuke.repeat(User.class).times(2).toList())
+				.hasSize(2)
+				.extracting(User::getName, User::getLastName)
+				.containsExactly(Tuple.tuple("Malcom", "Scott"), Tuple.tuple("Malcom", "Scott"));
+
+		verify(mock, times(2)).callMe();
+		verifyNoMoreInteractions(mock);
 	}
 
 	@Test
-	public void repeat_2_users_as_set(){
+	public void repeat_2_users_as_set() {
 		assertThat(FactoryDuke.repeat(User.class).times(2).toSet())
 				.hasSize(2)
 				.extracting(User::getName, User::getLastName)
 				.containsExactly(Tuple.tuple("Malcom", "Scott"), Tuple.tuple("Malcom", "Scott"));
+
+		verify(mock, times(2)).callMe();
+		verifyNoMoreInteractions(mock);
 	}
 
 	@Test
-	public void repeat_2_users_with_identifier(){
+	public void repeat_2_users_with_identifier() {
 		assertThat(FactoryDuke.repeat(User.class, "user_with_fr_address").times(2).toList())
 				.hasSize(2)
 				.extracting(User::getName, User::getLastName, u -> u.getAddr().getCity())
 				.containsExactly(Tuple.tuple("Malcom", "Scott", "Paris"), Tuple.tuple("Malcom", "Scott", "Paris"));
+
+		verify(mock, times(6)).callMe();
+		verifyNoMoreInteractions(mock);
 	}
 
 	@Test
-	public void repeat_2_users_with_override(){
+	public void repeat_2_users_with_override() {
 		assertThat(FactoryDuke.repeat(User.class, u -> {
 			u.setRole(Role.USER);
 			u.setId(1L);
@@ -73,10 +100,13 @@ public class FactoryDukeTest {
 				.hasSize(2)
 				.extracting(User::getId, User::getLastName, User::getRole)
 				.containsExactly(Tuple.tuple(1L, "Scott", Role.USER), Tuple.tuple(1L, "Scott", Role.USER));
+
+		verify(mock, times(2)).callMe();
+		verifyNoMoreInteractions(mock);
 	}
 
 	@Test
-	public void repeat_2_users_with_identifier_and_override(){
+	public void repeat_2_users_with_identifier_and_override() {
 		assertThat(FactoryDuke.repeat(User.class, "user_with_fr_address", u -> {
 			u.getAddr().setCity("NY");
 			u.setRole(Role.USER);
@@ -84,6 +114,28 @@ public class FactoryDukeTest {
 				.hasSize(2)
 				.extracting(User::getName, User::getLastName, User::getRole, u -> u.getAddr().getCity())
 				.containsExactly(Tuple.tuple("Malcom", "Scott", Role.USER, "NY"), Tuple.tuple("Malcom", "Scott", Role.USER, "NY"));
+
+		verify(mock, times(6)).callMe();
+		verifyNoMoreInteractions(mock);
 	}
 
+	@Test
+	public void no_interaction_with_callback_if_reset(){
+		FactoryDuke.reset();
+
+		FactoryDuke.define(User.class, u -> {
+			u.setLastName("Scott");
+			u.setName("Malcom");
+			u.setRole(Role.USER);
+		});
+
+		assertThat(FactoryDuke.build(User.class)).extracting(User::getName, User::getLastName)
+				.contains("Malcom", "Scott");
+
+		verifyZeroInteractions(mock);
+	}
+
+	public interface Mock {
+		void callMe();
+	}
 }

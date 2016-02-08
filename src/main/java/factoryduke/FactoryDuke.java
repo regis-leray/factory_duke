@@ -11,7 +11,7 @@ public class FactoryDuke {
 		define(clazz, clazz.getCanonicalName(), builder);
 	}
 
-	public static <T> void define(Class<T> clazz, String identifier,  Supplier<T> builder) {
+	public static <T> void define(Class<T> clazz, String identifier, Supplier<T> builder) {
 		FactoryRuntimeHolder.getRuntime().register(new SupplyTemplate<>(clazz, identifier, builder));
 	}
 
@@ -32,35 +32,37 @@ public class FactoryDuke {
 	}
 
 	public static <T> T build(Class<T> clazz, String identifier) {
-		return build(clazz, identifier, o -> {});
+		return build(clazz, identifier, o -> {
+		});
 	}
 
 	public static <T> T build(Class<T> clazz, String identifier, Consumer<T> override) {
 		return FactoryRuntimeHolder.getRuntime().build(identifier, override).toOne();
 	}
 
-	public static <T> Repeat<T> repeat(Class<T> clazz){
+	public static <T> InstanceBuilder<T> repeat(Class<T> clazz) {
 		return repeat(clazz, clazz.getCanonicalName());
 	}
 
-	public static <T> Repeat<T> repeat(Class<T> clazz, String identifier) {
-		return repeat(clazz, identifier, o -> {});
+	public static <T> InstanceBuilder<T> repeat(Class<T> clazz, String identifier) {
+		return repeat(clazz, identifier, o -> {
+		});
 	}
 
-	public static <T> Repeat<T> repeat(Class<T> clazz, Consumer<T> override) {
+	public static <T> InstanceBuilder<T> repeat(Class<T> clazz, Consumer<T> override) {
 		return repeat(clazz, clazz.getCanonicalName(), override);
 	}
 
-	public static <T> Repeat<T> repeat(Class<T> clazz, String identifier, Consumer<T> override) {
+	public static <T> InstanceBuilder<T> repeat(Class<T> clazz, String identifier, Consumer<T> override) {
 		return FactoryRuntimeHolder.getRuntime().build(identifier, override);
 	}
 
-	public static void load() {
-		load(new String[0]);
+	public static FactoryContext load() {
+		return load(new String[0]);
 	}
 
-	public static void load(String... packages) {
-		FactoryRuntimeHolder.getRuntime().load(packages);
+	public static FactoryContext load(String... packages) {
+		return FactoryRuntimeHolder.getRuntime().load(packages);
 	}
 
 	public static void reset() {
