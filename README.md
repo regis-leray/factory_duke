@@ -27,7 +27,7 @@ Use it like a maven dependency on your project
 <dependency>
     <groupId>com.github.regis-leray</groupId>
     <artifactId>factory-duke</artifactId>
-    <version>0.6</version>
+    <version>0.7</version>
 </dependency>
 ```
 
