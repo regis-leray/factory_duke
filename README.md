@@ -14,8 +14,8 @@ Factory Duke is using a lot of lamdba, so it is only compatible with ```java 8``
 
 ###Concept 
 
-* Simple 
-* Extensible
+* Simple & Fluent 
+* Type safe
 * Fast (no reflection)
 * Very light (Only one dependency)
 
@@ -190,7 +190,6 @@ public void loadAndCustomCallback(){
 	});
 }
 ```
-
 
 ##Licence
 
