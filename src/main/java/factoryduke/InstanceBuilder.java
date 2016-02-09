@@ -7,6 +7,8 @@ public interface InstanceBuilder<T> {
 
 	T toOne();
 
+	InstanceBuilder<T> skipGlobalCallbacks(boolean skip);
+
 	CollectionBuilder<T> times(int size);
 
 	interface CollectionBuilder<T> {

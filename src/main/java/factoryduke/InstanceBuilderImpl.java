@@ -2,14 +2,13 @@ package factoryduke;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-public class Repeat<T> implements InstanceBuilder<T>, InstanceBuilder.CollectionBuilder<T> {
+public class InstanceBuilderImpl<T> implements InstanceBuilder<T>, InstanceBuilder.CollectionBuilder<T> {
 
 	private final Template template;
 
@@ -17,9 +16,11 @@ public class Repeat<T> implements InstanceBuilder<T>, InstanceBuilder.Collection
 
 	private final List<Consumer> callbacks;
 
+	private boolean enableGlobalCallbacks = true;
+
 	private int times;
 
-	Repeat(Template template, Consumer<T> override, List<Consumer> callbacks) {
+	InstanceBuilderImpl(Template template, Consumer<T> override, List<Consumer> callbacks) {
 		this.template = template;
 		this.override = override;
 		this.callbacks = callbacks;
@@ -27,6 +28,12 @@ public class Repeat<T> implements InstanceBuilder<T>, InstanceBuilder.Collection
 
 	public T toOne() {
 		return times(1).toList().get(0);
+	}
+
+	@Override
+	public InstanceBuilder<T> skipGlobalCallbacks(boolean skipCallback) {
+		this.enableGlobalCallbacks = !skipCallback;
+		return this;
 	}
 
 	public CollectionBuilder<T> times(int times) {
@@ -57,7 +64,9 @@ public class Repeat<T> implements InstanceBuilder<T>, InstanceBuilder.Collection
 	private T createInstance() {
 		final T intance = template.create();
 		override.accept(intance);
-		callbacks.stream().forEach(c -> c.accept(intance));
+		if(enableGlobalCallbacks) {
+			callbacks.stream().forEach(c -> c.accept(intance));
+		}
 		return intance;
 	}
 

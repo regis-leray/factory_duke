@@ -28,7 +28,7 @@ public class FactoryDukeTest {
 
 	@Test
 	public void build_consumer_definition() {
-		assertThat(FactoryDuke.build(User.class)).extracting(User::getName, User::getLastName)
+		assertThat(FactoryDuke.build(User.class).toOne()).extracting(User::getName, User::getLastName)
 				.contains("Malcom", "Scott");
 
 		verify(mock, times(1)).callMe();
@@ -37,21 +37,21 @@ public class FactoryDukeTest {
 
 	@Test
 	public void adress_default() {
-		assertThat(FactoryDuke.build(Address.class)).extracting(Address::getCity, Address::getStreet).contains("Montreal", "prince street");
+		assertThat(FactoryDuke.build(Address.class).toOne()).extracting(Address::getCity, Address::getStreet).contains("Montreal", "prince street");
 		verify(mock, times(1)).callMe();
 		verifyNoMoreInteractions(mock);
 	}
 
 	@Test
 	public void factory_call_other_factory() {
-		assertThat(FactoryDuke.build(User.class, "user_with_fr_address")).extracting("name", "addr.city").contains("Malcom", "Paris");
+		assertThat(FactoryDuke.build(User.class, "user_with_fr_address").toOne()).extracting("name", "addr.city").contains("Malcom", "Paris");
 		verify(mock, times(3)).callMe();
 		verifyNoMoreInteractions(mock);
 	}
 
 	@Test
 	public void repeat_1_user() {
-		assertThat(FactoryDuke.repeat(User.class).toOne()).extracting(User::getName, User::getLastName)
+		assertThat(FactoryDuke.build(User.class).toOne()).extracting(User::getName, User::getLastName)
 				.contains("Malcom", "Scott");
 
 		verify(mock, times(1)).callMe();
@@ -60,7 +60,7 @@ public class FactoryDukeTest {
 
 	@Test
 	public void repeat_2_users() {
-		assertThat(FactoryDuke.repeat(User.class).times(2).toList())
+		assertThat(FactoryDuke.build(User.class).times(2).toList())
 				.hasSize(2)
 				.extracting(User::getName, User::getLastName)
 				.containsExactly(Tuple.tuple("Malcom", "Scott"), Tuple.tuple("Malcom", "Scott"));
@@ -71,7 +71,7 @@ public class FactoryDukeTest {
 
 	@Test
 	public void repeat_2_users_as_set() {
-		assertThat(FactoryDuke.repeat(User.class).times(2).toSet())
+		assertThat(FactoryDuke.build(User.class).times(2).toSet())
 				.hasSize(2)
 				.extracting(User::getName, User::getLastName)
 				.containsExactly(Tuple.tuple("Malcom", "Scott"), Tuple.tuple("Malcom", "Scott"));
@@ -82,7 +82,7 @@ public class FactoryDukeTest {
 
 	@Test
 	public void repeat_2_users_with_identifier() {
-		assertThat(FactoryDuke.repeat(User.class, "user_with_fr_address").times(2).toList())
+		assertThat(FactoryDuke.build(User.class, "user_with_fr_address").times(2).toList())
 				.hasSize(2)
 				.extracting(User::getName, User::getLastName, u -> u.getAddr().getCity())
 				.containsExactly(Tuple.tuple("Malcom", "Scott", "Paris"), Tuple.tuple("Malcom", "Scott", "Paris"));
@@ -93,7 +93,7 @@ public class FactoryDukeTest {
 
 	@Test
 	public void repeat_2_users_with_override() {
-		assertThat(FactoryDuke.repeat(User.class, u -> {
+		assertThat(FactoryDuke.build(User.class, u -> {
 			u.setRole(Role.USER);
 			u.setId(1L);
 		}).times(2).toList())
@@ -107,7 +107,7 @@ public class FactoryDukeTest {
 
 	@Test
 	public void repeat_2_users_with_identifier_and_override() {
-		assertThat(FactoryDuke.repeat(User.class, "user_with_fr_address", u -> {
+		assertThat(FactoryDuke.build(User.class, "user_with_fr_address", u -> {
 			u.getAddr().setCity("NY");
 			u.setRole(Role.USER);
 		}).times(2).toList())
@@ -120,6 +120,14 @@ public class FactoryDukeTest {
 	}
 
 	@Test
+	public void skip_callback(){
+		assertThat(FactoryDuke.build(User.class).skipGlobalCallbacks(true).toOne()).extracting(User::getName, User::getLastName)
+				.contains("Malcom", "Scott");
+
+		verifyZeroInteractions(mock);
+	}
+
+	@Test
 	public void no_interaction_with_callback_if_reset(){
 		FactoryDuke.reset();
 
@@ -129,7 +137,7 @@ public class FactoryDukeTest {
 			u.setRole(Role.USER);
 		});
 
-		assertThat(FactoryDuke.build(User.class)).extracting(User::getName, User::getLastName)
+		assertThat(FactoryDuke.build(User.class).toOne()).extracting(User::getName, User::getLastName)
 				.contains("Malcom", "Scott");
 
 		verifyZeroInteractions(mock);

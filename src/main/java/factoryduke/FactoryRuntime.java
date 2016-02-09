@@ -28,7 +28,7 @@ class FactoryRuntime implements FactoryContext {
 
 	<T> InstanceBuilder<T> build(String identifier, Consumer<T> override) {
 		final Template template = findTemplate(identifier);
-		return new Repeat<>(template, override, globalCallbacks);
+		return new InstanceBuilderImpl<>(template, override, globalCallbacks);
 	}
 
 	private Template findTemplate(String identifier) {

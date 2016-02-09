@@ -16,8 +16,8 @@ public class UserFactory implements TFactory {
 		});
 
 		FactoryDuke.define(User.class, "user_with_fr_address", () -> {
-			User u = FactoryDuke.build(User.class);
-			u.setAddr(FactoryDuke.build(Address.class, "address_in_fr"));
+			User u = FactoryDuke.build(User.class).toOne();
+			u.setAddr(FactoryDuke.build(Address.class, "address_in_fr").toOne());
 			return u;
 		});
 	}

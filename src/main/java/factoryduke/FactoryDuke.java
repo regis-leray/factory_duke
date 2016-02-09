@@ -23,37 +23,20 @@ public class FactoryDuke {
 		FactoryRuntimeHolder.getRuntime().register(new ConsumerTemplate(clazz, identifier, builder));
 	}
 
-	public static <T> T build(Class<T> clazz) {
+	public static <T> InstanceBuilder<T> build(Class<T> clazz) {
 		return build(clazz, clazz.getCanonicalName());
 	}
 
-	public static <T> T build(Class<T> clazz, Consumer<T> override) {
-		return build(clazz, clazz.getCanonicalName(), override);
-	}
-
-	public static <T> T build(Class<T> clazz, String identifier) {
+	public static <T> InstanceBuilder<T> build(Class<T> clazz, String identifier) {
 		return build(clazz, identifier, o -> {
 		});
 	}
 
-	public static <T> T build(Class<T> clazz, String identifier, Consumer<T> override) {
-		return FactoryRuntimeHolder.getRuntime().build(identifier, override).toOne();
+	public static <T> InstanceBuilder<T> build(Class<T> clazz, Consumer<T> override) {
+		return build(clazz, clazz.getCanonicalName(), override);
 	}
 
-	public static <T> InstanceBuilder<T> repeat(Class<T> clazz) {
-		return repeat(clazz, clazz.getCanonicalName());
-	}
-
-	public static <T> InstanceBuilder<T> repeat(Class<T> clazz, String identifier) {
-		return repeat(clazz, identifier, o -> {
-		});
-	}
-
-	public static <T> InstanceBuilder<T> repeat(Class<T> clazz, Consumer<T> override) {
-		return repeat(clazz, clazz.getCanonicalName(), override);
-	}
-
-	public static <T> InstanceBuilder<T> repeat(Class<T> clazz, String identifier, Consumer<T> override) {
+	public static <T> InstanceBuilder<T> build(Class<T> clazz, String identifier, Consumer<T> override) {
 		return FactoryRuntimeHolder.getRuntime().build(identifier, override);
 	}
 

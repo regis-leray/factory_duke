@@ -46,13 +46,13 @@ FactoryDuke.define(User.class, u -> {
 after you can use this definition
 
 ```java
-User user = FactoryDuke.build(User.class);
+User user = FactoryDuke.build(User.class).toOne();
 ```
 
 You can override some fields during the creation of the instance
 
 ```java
-User user = FactoryDuke.build(User.class, u -> u.setRole(Role.ADMIN));
+User user = FactoryDuke.build(User.class, u -> u.setRole(Role.ADMIN)).toOne();
 ```
 
 If you need a full control of the bean creation you can return the instance itself.
@@ -72,14 +72,14 @@ You can use factory inside a definition by using the supplier approach, which pr
 ````java
 FactoryDuke.define(User.class, "admin_user", () -> {
 			//create instance from the default definition of User.class
-			User u = FactoryDuke.build(User.class);
+			User u = FactoryDuke.build(User.class).toOne();
 			u.setRole(model.Role.ADMIN);
 			return u;
 		});
 ````
 
 ```java
-User user = FactoryDuke.build(User.class, "admin_user");
+User user = FactoryDuke.build(User.class, "admin_user").toOne();
 ```
 
 
@@ -135,9 +135,9 @@ FactoryDuke.reset();
 
 Create a list / set of two exact same user
 ```
-List<User> list = FactoryDuke.repeat(User.class).times(2).toList();
+List<User> list = FactoryDuke.build(User.class).times(2).toList();
 
-Set<User> sets = FactoryDuke.repeat(User.class).times(2).toSet()
+Set<User> sets = FactoryDuke.build(User.class).times(2).toSet()
 ```
 
 If you need to use generator 
@@ -157,16 +157,38 @@ FactoryDuke.define(User.class, "generator_users", u -> {
 });
 
 // will return 3 differents users
-List<User> users = FactoryDuke.repeat(User.class, "generator_users").times(3).toList();
+List<User> users = FactoryDuke.build(User.class, "generator_users").times(3).toList();
  
 ``` 
 
 ##Global callback
 
-If you need to setup a share behavior(s) you can now register global callback(s)
+If you need to setup a share behavior(s) you can now register global callback(s). This callback(s) will be called after ```build()``.
 
 ```
 FactoryDuke.load().registerGlobalCallback(System.out::println)
+```
+
+Also there is a way to disable the global callback for each object build
+
+```
+FactoryDuke.build(User.class).skipGlobalCallback(true).toOne();
+```
+
+###Tips the global callback can be really usefull is you need to implement a persistence layer on specific Object (example with hibernate)
+
+```
+@Inject
+private SessionFactory sessionFactory;
+
+@Before
+public void loadAndCustomCallback(){
+	FactoryDuke.load().registerGlobalCallback(o ->{
+		if(o.getClass().isAnnotationPresent(Entity.class)){
+			sessionFactory.getCurrentSession().save(o);
+		}
+	});
+}
 ```
 
 

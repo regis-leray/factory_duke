@@ -33,7 +33,7 @@ public class ManualFactoryDukeTest {
 		});
 
 		FactoryDuke.define(User.class, "user_with_address", () -> {
-			User u = FactoryDuke.build(User.class);
+			User u = FactoryDuke.build(User.class).toOne();
 
 			Address adress = new Address();
 			adress.setCity("MTL");
@@ -47,7 +47,7 @@ public class ManualFactoryDukeTest {
 			u.setName("Malcom");
 			u.setRole(Role.USER);
 
-			u.setAddr(FactoryDuke.build(Address.class, "address_in_fr"));
+			u.setAddr(FactoryDuke.build(Address.class, "address_in_fr").toOne());
 		});
 
 		FactoryDuke.define(Address.class, "address_in_fr", a -> {
@@ -59,37 +59,37 @@ public class ManualFactoryDukeTest {
 
 	@Test
 	public void defaultUser(){
-		User defaultUser = FactoryDuke.build(User.class);
+		User defaultUser = FactoryDuke.build(User.class).toOne();
 		assertThat(defaultUser).isNotNull();
 	}
 
 	@Test
 	public void defaultUserWithOverride(){
-		User user = FactoryDuke.build(User.class, u -> u.setName("toto"));
+		User user = FactoryDuke.build(User.class, u -> u.setName("toto")).toOne();
 		assertThat(user).isNotNull().extracting(User::getName).contains("toto");
 	}
 
 	@Test
 	public void adminUser(){
-		User user = FactoryDuke.build(User.class, "admin_user");
+		User user = FactoryDuke.build(User.class, "admin_user").toOne();
 		assertThat(user).isNotNull().extracting(User::getRole).contains(Role.ADMIN);
 	}
 
 	@Test
 	public void defaultUserWithAddr(){
-		User user = FactoryDuke.build(User.class, "user_with_address");
+		User user = FactoryDuke.build(User.class, "user_with_address").toOne();
 		assertThat(user).isNotNull().hasFieldOrPropertyWithValue("addr.city", "MTL");
 	}
 
 	@Test
 	public void defaultUserWithAddrWithOverride(){
-		User user = FactoryDuke.build(User.class, "user_with_fr_address");
+		User user = FactoryDuke.build(User.class, "user_with_fr_address").toOne();
 		assertThat(user).isNotNull().hasFieldOrPropertyWithValue("addr.city", "Paris");
 	}
 
 	@Test
 	public void adminUserWithFrAddr(){
-		User user = FactoryDuke.build(User.class, "user_with_fr_address", u -> u.setRole(Role.ADMIN));
+		User user = FactoryDuke.build(User.class, "user_with_fr_address", u -> u.setRole(Role.ADMIN)).toOne();
 
 		assertThat(user).isNotNull()
 				.hasFieldOrPropertyWithValue("role", Role.ADMIN)
@@ -108,7 +108,7 @@ public class ManualFactoryDukeTest {
 			u.setName(names.nextValue());
 		});
 
-		List<User> users = FactoryDuke.repeat(User.class).times(3).toList();
+		List<User> users = FactoryDuke.build(User.class).times(3).toList();
 
 		assertThat(users).hasSize(3).extracting(User::getId, User::getName)
 				.containsExactly(tuple(1L, "Scott"), tuple(2L, "John"), tuple(3L, "Malcom"));
@@ -123,7 +123,7 @@ public class ManualFactoryDukeTest {
 			u.setName("James");
 		});
 
-		List<User> users = FactoryDuke.repeat(User.class).times(3).toList();
+		List<User> users = FactoryDuke.build(User.class).times(3).toList();
 
 		assertThat(users).hasSize(3).extracting(User::getId, User::getName)
 				.containsExactly(tuple(1L, "James"), tuple(1L, "James"), tuple(1L, "James"));
