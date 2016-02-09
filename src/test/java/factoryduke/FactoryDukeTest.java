@@ -22,7 +22,7 @@ public class FactoryDukeTest {
 
 	@Before
 	public void initialize() {
-		FactoryDuke.load().registerGlobalCallback(o -> mock.callMe());
+		FactoryDuke.load().registerGlobalCallbacks(o -> mock.callMe());
 		reset(mock);
 	}
 
@@ -141,6 +141,19 @@ public class FactoryDukeTest {
 				.contains("Malcom", "Scott");
 
 		verifyZeroInteractions(mock);
+	}
+
+	@Test
+	public void load_specific_factory(){
+		FactoryDuke.reset();
+		FactoryDuke.load("custom");
+
+		assertThat(FactoryRuntimeHolder.getRuntime().getTemplates()).hasSize(1);
+
+		assertThat(FactoryDuke.build(User.class).toOne())
+				.extracting(User::getName, User::getRole)
+				.contains("Empty", Role.ADMIN);
+
 	}
 
 	public interface Mock {

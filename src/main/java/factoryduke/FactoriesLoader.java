@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import factoryduke.exceptions.FactoryLoaderException;
 import factoryduke.exceptions.FactoryNotFoundException;
+import factoryduke.utils.Assert;
 
 public class FactoriesLoader {
 
@@ -18,23 +19,21 @@ public class FactoriesLoader {
 
 	private final FactoryScanner scanner;
 
-	public FactoriesLoader() {
-		this(new String[0]);
-	}
+	private final boolean skipDefaultBehavior;
 
 	public FactoriesLoader(String... packages) {
-		this(new FactoryScanner()
-				.withPackages(DEFAULT_PACKAGE)
+		Assert.that().notNull(packages, "packages cannot be null");
+		final boolean skipDefaultFactory = packages.length > 0;
+		this.skipDefaultBehavior = packages.length > 0;
+		this.scanner = new FactoryScanner()
 				.withInterfaces(TFactory.class)
-				.addPackages(packages));
-	}
-
-	public FactoriesLoader(FactoryScanner factoryScanner) {
-		this.scanner = factoryScanner;
+				.withPackages(skipDefaultFactory ? packages : new String[]{DEFAULT_PACKAGE});
 	}
 
 	public void load() {
-		doLoadSafe(DEFAULT_FACTORY);
+		if(!skipDefaultBehavior) {
+			doLoadSafe(DEFAULT_FACTORY);
+		}
 
 		final List<String> founded = scanner.scan();
 

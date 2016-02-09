@@ -18,11 +18,6 @@ public class FactoryScanner {
 		return this;
 	}
 
-	public FactoryScanner addPackages(String... packages) {
-		this.packages = Stream.of(this.packages, packages).flatMap(Stream::of).toArray(String[]::new);
-		return this;
-	}
-
 	public FactoryScanner withInterfaces(Class... interfaces) {
 		this.interfaces = interfaces;
 		return this;

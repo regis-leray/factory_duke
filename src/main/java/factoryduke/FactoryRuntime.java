@@ -49,7 +49,7 @@ class FactoryRuntime implements FactoryContext {
 	}
 
 	@Override
-	public void registerGlobalCallback(Consumer... callbacks){
+	public void registerGlobalCallbacks(Consumer... callbacks){
 		Assert.that().notNull(callbacks);
 		this.globalCallbacks = Arrays.asList(callbacks);
 	}
