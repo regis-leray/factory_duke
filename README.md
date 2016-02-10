@@ -27,7 +27,7 @@ Use it like a maven dependency on your project
 <dependency>
     <groupId>com.github.regis-leray</groupId>
     <artifactId>factory-duke</artifactId>
-    <version>0.7</version>
+    <version>0.8</version>
 </dependency>
 ```
 
@@ -165,7 +165,7 @@ List<User> users = FactoryDuke.build(User.class, "generator_users").times(3).toL
 
 If you need to setup a share behavior(s) between cross factories definitions you can now register hook(s).
  
-This hook(s) will be called before or/and after the ```build()`` creation.
+This hook(s) will be called before or/and after the ```build()``` creation.
 
 ```
 FactoryDuke.load().addAfterHook(System.out::println)
@@ -177,7 +177,7 @@ Also there is a way to disable the global callback for each object build
 FactoryDuke.build(User.class).skipAfterHook(true).toOne();
 ```
 
-###Tips the global callback can be really usefull is you need to implement a persistence layer on specific Object (example with hibernate)
+####Tips the global callback can be really usefull is you need to implement a persistence layer on specific Object (example with hibernate)
 
 ```
 @Inject
