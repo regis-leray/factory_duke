@@ -1,4 +1,4 @@
-package factoryduke;
+package factoryduke.builder;
 
 import java.util.List;
 import java.util.Set;
@@ -6,8 +6,6 @@ import java.util.Set;
 public interface InstanceBuilder<T> {
 
 	T toOne();
-
-	InstanceBuilder<T> skipGlobalCallbacks(boolean skip);
 
 	CollectionBuilder<T> times(int size);
 

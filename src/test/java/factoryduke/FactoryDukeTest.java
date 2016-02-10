@@ -22,7 +22,7 @@ public class FactoryDukeTest {
 
 	@Before
 	public void initialize() {
-		FactoryDuke.load().registerGlobalCallbacks(o -> mock.callMe());
+		FactoryDuke.load().addAfterHook(o -> mock.afterCall());
 		reset(mock);
 	}
 
@@ -31,21 +31,21 @@ public class FactoryDukeTest {
 		assertThat(FactoryDuke.build(User.class).toOne()).extracting(User::getName, User::getLastName)
 				.contains("Malcom", "Scott");
 
-		verify(mock, times(1)).callMe();
+		verify(mock, times(1)).afterCall();
 		verifyNoMoreInteractions(mock);
 	}
 
 	@Test
 	public void adress_default() {
 		assertThat(FactoryDuke.build(Address.class).toOne()).extracting(Address::getCity, Address::getStreet).contains("Montreal", "prince street");
-		verify(mock, times(1)).callMe();
+		verify(mock, times(1)).afterCall();
 		verifyNoMoreInteractions(mock);
 	}
 
 	@Test
 	public void factory_call_other_factory() {
 		assertThat(FactoryDuke.build(User.class, "user_with_fr_address").toOne()).extracting("name", "addr.city").contains("Malcom", "Paris");
-		verify(mock, times(3)).callMe();
+		verify(mock, times(3)).afterCall();
 		verifyNoMoreInteractions(mock);
 	}
 
@@ -54,7 +54,7 @@ public class FactoryDukeTest {
 		assertThat(FactoryDuke.build(User.class).toOne()).extracting(User::getName, User::getLastName)
 				.contains("Malcom", "Scott");
 
-		verify(mock, times(1)).callMe();
+		verify(mock, times(1)).afterCall();
 		verifyNoMoreInteractions(mock);
 	}
 
@@ -65,7 +65,7 @@ public class FactoryDukeTest {
 				.extracting(User::getName, User::getLastName)
 				.containsExactly(Tuple.tuple("Malcom", "Scott"), Tuple.tuple("Malcom", "Scott"));
 
-		verify(mock, times(2)).callMe();
+		verify(mock, times(2)).afterCall();
 		verifyNoMoreInteractions(mock);
 	}
 
@@ -76,7 +76,7 @@ public class FactoryDukeTest {
 				.extracting(User::getName, User::getLastName)
 				.containsExactly(Tuple.tuple("Malcom", "Scott"), Tuple.tuple("Malcom", "Scott"));
 
-		verify(mock, times(2)).callMe();
+		verify(mock, times(2)).afterCall();
 		verifyNoMoreInteractions(mock);
 	}
 
@@ -87,7 +87,7 @@ public class FactoryDukeTest {
 				.extracting(User::getName, User::getLastName, u -> u.getAddr().getCity())
 				.containsExactly(Tuple.tuple("Malcom", "Scott", "Paris"), Tuple.tuple("Malcom", "Scott", "Paris"));
 
-		verify(mock, times(6)).callMe();
+		verify(mock, times(6)).afterCall();
 		verifyNoMoreInteractions(mock);
 	}
 
@@ -101,7 +101,7 @@ public class FactoryDukeTest {
 				.extracting(User::getId, User::getLastName, User::getRole)
 				.containsExactly(Tuple.tuple(1L, "Scott", Role.USER), Tuple.tuple(1L, "Scott", Role.USER));
 
-		verify(mock, times(2)).callMe();
+		verify(mock, times(2)).afterCall();
 		verifyNoMoreInteractions(mock);
 	}
 
@@ -115,13 +115,13 @@ public class FactoryDukeTest {
 				.extracting(User::getName, User::getLastName, User::getRole, u -> u.getAddr().getCity())
 				.containsExactly(Tuple.tuple("Malcom", "Scott", Role.USER, "NY"), Tuple.tuple("Malcom", "Scott", Role.USER, "NY"));
 
-		verify(mock, times(6)).callMe();
+		verify(mock, times(6)).afterCall();
 		verifyNoMoreInteractions(mock);
 	}
 
 	@Test
 	public void skip_callback(){
-		assertThat(FactoryDuke.build(User.class).skipGlobalCallbacks(true).toOne()).extracting(User::getName, User::getLastName)
+		assertThat(FactoryDuke.build(User.class).skipAfterHook(true).toOne()).extracting(User::getName, User::getLastName)
 				.contains("Malcom", "Scott");
 
 		verifyZeroInteractions(mock);
@@ -156,7 +156,47 @@ public class FactoryDukeTest {
 
 	}
 
+	@Test
+	public void call_before_and_after_hooks(){
+		FactoryDuke.reset();
+		FactoryDuke.load().addAfterHook(o -> mock.afterCall()).addBeforeHook(() -> mock.beforeCall());
+
+		assertThat(FactoryDuke.build(User.class).toOne()).isNotNull();
+
+		verify(mock, times(1)).beforeCall();
+		verify(mock, times(1)).afterCall();
+		verifyNoMoreInteractions(mock);
+
+	}
+
+	@Test
+	public void skip_before_hook(){
+		FactoryDuke.reset();
+		FactoryDuke.load().addAfterHook(o -> mock.afterCall()).addBeforeHook(() -> mock.beforeCall());
+
+		assertThat(FactoryDuke.build(User.class).skipBeforeHook(true).toOne()).isNotNull();
+
+		verify(mock, times(0)).beforeCall();
+		verify(mock, times(1)).afterCall();
+		verifyNoMoreInteractions(mock);
+
+	}
+
+	@Test
+	public void skip_after_hook(){
+		FactoryDuke.reset();
+		FactoryDuke.load().addAfterHook(o -> mock.afterCall()).addBeforeHook(() -> mock.beforeCall());
+
+		assertThat(FactoryDuke.build(User.class).skipAfterHook(true).toOne()).isNotNull();
+
+		verify(mock, times(1)).beforeCall();
+		verify(mock, times(0)).afterCall();
+		verifyNoMoreInteractions(mock);
+
+	}
+
 	public interface Mock {
-		void callMe();
+		void beforeCall();
+		void afterCall();
 	}
 }

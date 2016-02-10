@@ -1,4 +1,4 @@
-package factoryduke;
+package factoryduke.builder;
 
 
 import java.util.ArrayList;
@@ -8,32 +8,24 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import factoryduke.Template;
+import factoryduke.function.Callback;
+
 public class InstanceBuilderImpl<T> implements InstanceBuilder<T>, InstanceBuilder.CollectionBuilder<T> {
 
 	private final Template template;
 
 	private final Consumer<T> override;
 
-	private final List<Consumer> callbacks;
-
-	private boolean enableGlobalCallbacks = true;
-
 	private int times;
 
-	InstanceBuilderImpl(Template template, Consumer<T> override, List<Consumer> callbacks) {
+	public InstanceBuilderImpl(Template template, Consumer<T> override) {
 		this.template = template;
 		this.override = override;
-		this.callbacks = callbacks;
 	}
 
 	public T toOne() {
 		return times(1).toList().get(0);
-	}
-
-	@Override
-	public InstanceBuilder<T> skipGlobalCallbacks(boolean skipCallback) {
-		this.enableGlobalCallbacks = !skipCallback;
-		return this;
 	}
 
 	public CollectionBuilder<T> times(int times) {
@@ -62,12 +54,19 @@ public class InstanceBuilderImpl<T> implements InstanceBuilder<T>, InstanceBuild
 	}
 
 	private T createInstance() {
-		final T intance = template.create();
-		override.accept(intance);
-		if(enableGlobalCallbacks) {
-			callbacks.stream().forEach(c -> c.accept(intance));
-		}
-		return intance;
+		doBefore();
+
+		final T instance = template.create();
+		override.accept(instance);
+
+		doAfter(instance);
+
+		return instance;
 	}
 
+	public void doAfter(T instance) {
+	}
+
+	public void doBefore() {
+	}
 }

@@ -2,6 +2,10 @@ package factoryduke;
 
 import java.util.function.Consumer;
 
+import factoryduke.function.Callback;
+
 public interface FactoryContext {
-	void registerGlobalCallbacks(Consumer...callbacks);
+	FactoryContext addBeforeHook(Callback hook);
+
+	FactoryContext addAfterHook(Consumer hook);
 }

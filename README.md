@@ -161,18 +161,20 @@ List<User> users = FactoryDuke.build(User.class, "generator_users").times(3).toL
  
 ``` 
 
-##Global callback
+##Global Hooks (after / before)
 
-If you need to setup a share behavior(s) you can now register global callback(s). This callback(s) will be called after ```build()``.
+If you need to setup a share behavior(s) between cross factories definitions you can now register hook(s).
+ 
+This hook(s) will be called before or/and after the ```build()`` creation.
 
 ```
-FactoryDuke.load().registerGlobalCallback(System.out::println)
+FactoryDuke.load().addAfterHook(System.out::println)
 ```
 
 Also there is a way to disable the global callback for each object build
 
 ```
-FactoryDuke.build(User.class).skipGlobalCallback(true).toOne();
+FactoryDuke.build(User.class).skipAfterHook(true).toOne();
 ```
 
 ###Tips the global callback can be really usefull is you need to implement a persistence layer on specific Object (example with hibernate)
@@ -183,7 +185,7 @@ private SessionFactory sessionFactory;
 
 @Before
 public void loadAndCustomCallback(){
-	FactoryDuke.load().registerGlobalCallback(o ->{
+	FactoryDuke.load().addAfterHook(o ->{
 		if(o.getClass().isAnnotationPresent(Entity.class)){
 			sessionFactory.getCurrentSession().save(o);
 		}

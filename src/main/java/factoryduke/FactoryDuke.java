@@ -3,6 +3,8 @@ package factoryduke;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import factoryduke.builder.HookBuilder;
+
 public class FactoryDuke {
 	private FactoryDuke() {
 	}
@@ -23,20 +25,20 @@ public class FactoryDuke {
 		FactoryRuntimeHolder.getRuntime().register(new ConsumerTemplate(clazz, identifier, builder));
 	}
 
-	public static <T> InstanceBuilder<T> build(Class<T> clazz) {
+	public static <T> HookBuilder<T> build(Class<T> clazz) {
 		return build(clazz, clazz.getCanonicalName());
 	}
 
-	public static <T> InstanceBuilder<T> build(Class<T> clazz, String identifier) {
+	public static <T> HookBuilder<T> build(Class<T> clazz, String identifier) {
 		return build(clazz, identifier, o -> {
 		});
 	}
 
-	public static <T> InstanceBuilder<T> build(Class<T> clazz, Consumer<T> override) {
+	public static <T> HookBuilder<T> build(Class<T> clazz, Consumer<T> override) {
 		return build(clazz, clazz.getCanonicalName(), override);
 	}
 
-	public static <T> InstanceBuilder<T> build(Class<T> clazz, String identifier, Consumer<T> override) {
+	public static <T> HookBuilder<T> build(Class<T> clazz, String identifier, Consumer<T> override) {
 		return FactoryRuntimeHolder.getRuntime().build(identifier, override);
 	}
 
