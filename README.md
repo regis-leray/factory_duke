@@ -1,4 +1,4 @@
-#FactoryDuke 
+# FactoryDuke 
 
 [![Build Status](https://travis-ci.org/regis-leray/factory_duke.png?branch=master)](https://travis-ci.org/regis-leray/factory_duke)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.regis-leray/factory-duke.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.regis-leray/factory-duke)
@@ -12,14 +12,14 @@ Have you ever heard of factory_girl a super cool Ruby framework? Well, FactoryDu
 
 Factory Duke is using a lot of lamdba, so it is only compatible with ```java 8``` and higher.
 
-###Concept 
+### Concept 
 
 * Simple & Fluent 
 * Type safe
 * Fast (no reflection)
 * Very light (Only one dependency)
 
-###Installing
+### Installing
 
 Use it like a maven dependency on your project
 
@@ -31,7 +31,7 @@ Use it like a maven dependency on your project
 </dependency>
 ```
 
-##How do we use this?
+## How do we use this?
 
 FactoryDuke is a singleton object where you can register all of the templates. For example, you can define a template as follows:
 
@@ -83,11 +83,11 @@ User user = FactoryDuke.build(User.class, "admin_user").toOne();
 ```
 
 
-##One Factory == One Java File
+## One Factory == One Java File
 
 It is highly recommended that you have one factory for each class that provides the simplest set of attributes necessary to create an instance of that class.
 
-###How to create a template factory
+### How to create a template factory
 
 ```java
 public class UserFactory implements TFactory {
@@ -130,7 +130,7 @@ The templates are save in a static map, if you want to clear all the templates y
 FactoryDuke.reset();
 ```
 
-##Build list of object
+## Build list of object
 
 
 Create a list / set of two exact same user
@@ -161,7 +161,7 @@ List<User> users = FactoryDuke.build(User.class, "generator_users").times(3).toL
  
 ``` 
 
-##Global Hooks (after / before)
+## Global Hooks (after / before)
 
 If you need to setup a share behavior(s) between cross factories definitions you can now register hook(s).
  
@@ -177,7 +177,7 @@ Also there is a way to disable the global callback for each object build
 FactoryDuke.build(User.class).skipAfterHook(true).toOne();
 ```
 
-####Tips the global callback can be really usefull is you need to implement a persistence layer on specific Object (example with hibernate)
+#### Tips the global callback can be really usefull is you need to implement a persistence layer on specific Object (example with hibernate)
 
 ```
 @Inject
@@ -193,6 +193,6 @@ public void loadAndCustomCallback(){
 }
 ```
 
-##Licence
+## Licence
 
 FactoryDuke is distributed under the [MIT licence](https://opensource.org/licenses/MIT)
